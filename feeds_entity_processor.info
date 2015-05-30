@@ -1,1 +1,8 @@
 name = Feeds entity processor
+description = Provides a generic entity processor for Feeds.
+package = Feeds
+core = 7.x
+dependencies[] = feeds
+dependencies[] = entity
+
+files[] = tests/feeds_processor_entity.test
