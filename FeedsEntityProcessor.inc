@@ -22,26 +22,29 @@ class FeedsEntityProcessor extends FeedsProcessor {
   }
 
   /**
-   * Returns the bundle.
+   * Returns the bundle key.
    *
-   * @return string
-   *   The bundle of the entities this processor will create.
+   * @return string|false
+   *   The bundle key, or false if the entity type doesn't have one.
    */
-  public function bundle() {
+  protected function bundleKey() {
     $entity_info = $this->entityInfo();
-    $bundle = $this->entityType();
+    return isset($entity_info['bundle keys']['bundle']) ? $entity_info['bundle keys']['bundle'] : FALSE;
+  }
 
-    if (isset($entity_info['bundle keys']['bundle'])) {
-      $bundle_key = $entity_info['bundle keys']['bundle'];
-      if (isset($this->config['values'][$bundle_key])) {
-        $bundle = $this->config['values'][$bundle_key];
-      }
-      else {
-        $bundle = NULL;
-      }
+  /**
+   * Returns the translated label for the bundle.
+   *
+   * @return string|false
+   *   The translated label, or false if the entity does not have a label.
+   */
+  protected function bundleLabel() {
+    if (!$bundle_key = $this->bundleKey()) {
+      return FALSE;
     }
 
-    return $bundle;
+    $property = $this->entityWrapper()->getPropertyInfo($bundle_key);
+    return isset($property['label']) ? check_plain($property['label']) : t('Bundle');
   }
 
   /**
@@ -49,23 +52,60 @@ class FeedsEntityProcessor extends FeedsProcessor {
    */
   protected function entityInfo() {
     $info = parent::entityInfo();
-    if (isset($info['label plural'])) {
-      $plural = $info['label plural'];
-    }
-    else {
-      $plural = $info['label'];
+    $info['label plural'] = isset($info['label plural']) ? $info['label plural'] : $info['label'];
+
+    return $info;
+  }
+
+  /**
+   * Returns the entity properties that this processor is using.
+   *
+   * @return array
+   *   An array keyed by property name.
+   */
+  protected function entityProperties() {
+    $properties = array();
+    $bundle_key = $this->bundleKey();
+
+    foreach ($this->entityWrapper()->getPropertyInfo() as $name => $property) {
+      // Skip bundle.
+      if ($bundle_key === $name) {
+        continue;
+      }
+
+      if (empty($property['setter callback']) || !empty($property['field'])) {
+        continue;
+      }
+
+      $properties[$name] = $property;
     }
 
-    $info += array('label plural' => $plural);
-    return $info;
+    return $properties;
+  }
+
+  /**
+   * Returns the entity wrapper metadata for the processor's entity type.
+   *
+   * @return EntityMetadataWrapper
+   *  An entity metadata wrapper.
+   */
+  protected function entityWrapper() {
+    if ($this->bundleKey()) {
+      return entity_metadata_wrapper($this->entityType(), NULL, array('bundle' => $this->bundle()));
+    }
+
+    return entity_metadata_wrapper($this->entityType());
   }
 
   /**
    * Implements FeedsProcessor::newEntity().
    */
   protected function newEntity(FeedsSource $source) {
+    if ($bundle_key = $this->bundleKey()) {
+      return entity_create($this->entityType(), array($bundle_key => $this->bundle()) + $this->config['values']);
+    }
 
-    // return entity_create($this->entityType(), array('type' => $this->config['values']['type']));
+    return entity_create($this->entityType(), $this->config['values']);
   }
 
   /**
@@ -75,38 +115,31 @@ class FeedsEntityProcessor extends FeedsProcessor {
    *   contrib seems to say yes.
    */
   protected function entitySaveAccess($entity) {
-
     // The check will be skipped for anonymous users.
-    if ($this->config['authorize'] && !empty($entity->uid)) {
-
-      $author = user_load($entity->uid);
-
-      // If the uid was mapped directly, rather than by email or username, it
-      // could be invalid.
-      if (!$author) {
-        $message = 'User %uid is not a valid user.';
-        throw new FeedsAccessException(t($message, array('%uid' => $entity->uid)));
-      }
-
-      if (!empty($entity->is_new)) {
-        $op = 'create';
-        $access = entity_access($op, $this->entityType(), $author);
-      }
-      else {
-        $op = 'update';
-        $access = entity_access($op, $this->entityType(), $author);
-      }
-
-      if (!$access) {
-        $message = 'User %name is not authorized to %op entity %entity.';
-        $args = array(
-          '%name' => $author->name,
-          '%op' => $op,
-          '%entity' => $this->entityType(),
-        );
-        throw new FeedsAccessException(t($message, $args));
-      }
+    if (!$this->config['authorize'] || empty($entity->uid)) {
+      return;
     }
+
+    // If the uid was mapped directly, rather than by email or username, it
+    // could be invalid.
+    if (!$author = user_load($entity->uid)) {
+      throw new FeedsAccessException(t('User %uid is not a valid user.', array('%uid' => $entity->uid)));
+    }
+
+    $op = !empty($entity->is_new) ? 'create' : 'update';
+
+    // Check if user can create/update the entity.
+    if (entity_access($op, $this->entityType(), $author)) {
+      return;
+    }
+
+    $args = array(
+      '%name' => $author->name,
+      '%op' => $op,
+      '%entity' => $this->entityType(),
+    );
+
+    throw new FeedsAccessException(t('User %name is not authorized to %op entity %entity.', $args));
   }
 
   /**
@@ -129,6 +162,7 @@ class FeedsEntityProcessor extends FeedsProcessor {
   public function configDefaults() {
     return array(
       'values' => array(),
+      'authorize' => TRUE,
     ) + parent::configDefaults();
   }
 
@@ -137,6 +171,8 @@ class FeedsEntityProcessor extends FeedsProcessor {
    */
   public function configForm(&$form_state) {
     $form = parent::configForm($form_state);
+
+    $form['bundle']['#title'] = $this->bundleLabel();
 
     $form['values'] = array(
       '#type' => 'fieldset',
@@ -150,37 +186,35 @@ class FeedsEntityProcessor extends FeedsProcessor {
 
     $form['input_format']['#description'] = t('Select the default input format for the %entity to be created.', array('%entity' => $label_plural));
 
-    $wrapper = entity_metadata_wrapper($this->entityType());
+    foreach ($this->entityProperties() as $name => $property) {
 
-    foreach ($wrapper->getPropertyInfo() as $name => $property) {
-      if (!empty($property['setter callback']) && empty($property['field'])) {
-        $form['values'][$name] = array(
-          '#type' => 'textfield',
-          '#title' => $property['label'],
-          '#description' => isset($property['description']) ? $property['description'] : '',
-          '#default_value' => isset($this->config['values'][$name]) ? $this->config['values'][$name] : NULL,
-          '#required' => !empty($property['required']),
-        );
+      $form['values'][$name] = array(
+        '#type' => 'textfield',
+        '#title' => check_plain($property['label']),
+        '#description' => isset($property['description']) ? check_plain($property['description']) : '',
+        '#default_value' => isset($this->config['values'][$name]) ? $this->config['values'][$name] : NULL,
+        '#required' => !empty($property['required']),
+      );
 
-        if (!empty($property['options list'])) {
-          $form['values'][$name]['#type'] = 'select';
-          if (isset($property['type']) && entity_property_list_extract_type($property['type'])) {
-            $form['values'][$name]['#type'] = 'checkboxes';
-            if (!is_array($form['values'][$name]['#default_value'])) {
-              $form['values'][$name]['#default_value'] = array($form['values'][$name]['#default_value']);
-            }
-          }
-          $form['values'][$name]['#options'] = $wrapper->$name->optionsList();
+      if (!empty($property['options list'])) {
+        $form['values'][$name]['#type'] = 'select';
+
+        if (!is_array($form['values'][$name]['#default_value'])) {
+          $form['values'][$name]['#default_value'] = array($form['values'][$name]['#default_value']);
         }
 
-        elseif (!empty($property['type']) && $property['type'] == 'boolean') {
-          $form['values'][$name]['#type'] = 'checkbox';
+        if (isset($property['type']) && entity_property_list_extract_type($property['type'])) {
+          $form['values'][$name]['#type'] = 'checkboxes';
         }
-        // elseif (!empty($property['type']) && $property['type'] == 'date') {
-        //   $form['values'][$name]['#type'] = 'date';
-        // }
+
+        $form['values'][$name]['#options'] = $this->entityWrapper()->$name->optionsList();
+      }
+
+      elseif (!empty($property['type']) && $property['type'] === 'boolean') {
+        $form['values'][$name]['#type'] = 'checkbox';
       }
     }
+
     return $form;
   }
 
@@ -191,28 +225,32 @@ class FeedsEntityProcessor extends FeedsProcessor {
 
     $form = parent::configFormValidate($values);
 
-    $wrapper = entity_metadata_wrapper($this->entityType());
+    foreach ($this->entityProperties() as $name => $property) {
 
-    foreach ($wrapper->getPropertyInfo() as $name => $property) {
-      if (!empty($property['setter callback']) && empty($property['field'])) {
-
-        // Entity api won't accept empty date values.
-        if (!empty($property['type']) && $property['type'] == 'date') {
-          if (empty($values['values'][$name])) {
-            unset($values['values'][$name]);
-            continue;
-          }
+      // Entity api won't accept empty date values.
+      if (!empty($property['type']) && $property['type'] === 'date') {
+        if (empty($values['values'][$name])) {
+          unset($values['values'][$name]);
+          continue;
         }
+      }
 
-        if (isset($property['type']) && array_key_exists($name, $values['values'])) {
-          if (entity_property_list_extract_type($property['type']) && !is_array($values['values'][$name])) {
-            $values['values'][$name] = array($values['values'][$name]);
-          }
-          $valid = entity_property_verify_data_type($values['values'][$name], $property['type']);
-          if (!$valid) {
-            form_set_error("values][$name", t('Invalid data value given. Be sure it matches the required data type and format.'));
-          }
-        }
+      if (!isset($property['type']) || !array_key_exists($name, $values['values'])) {
+        continue;
+      }
+
+      $value = $values['values'][$name];
+
+      if (entity_property_list_extract_type($property['type']) && !is_array($value)) {
+        $values['values'][$name] = array($value);
+      }
+
+      if ($value === '') {
+        continue;
+      }
+
+      if (!entity_property_verify_data_type($value, $property['type'])) {
+        form_set_error("values][$name", t('Invalid data value given. Be sure it matches the required data type and format.'));
       }
     }
   }
@@ -221,34 +259,23 @@ class FeedsEntityProcessor extends FeedsProcessor {
    * Overrides parent::getMappingTargets().
    */
   public function getMappingTargets() {
-    // Get a wrapper with the right bundle info.
-
     $targets = parent::getMappingTargets();
-    $info = array('bundle' => $this->bundle());
 
-    $wrapper = entity_metadata_wrapper($this->entityType(), NULL, $info);
-    // @todo: maybe restrict to data types feeds can deal with.
-    foreach ($wrapper->getPropertyInfo() as $name => $property) {
-      if (!empty($property['setter callback']) && empty($property['field'])) {
-        $targets[$name] = array(
-          'name' => $property['label'],
-          'description' => isset($property['description']) ? $property['description'] : NULL,
-        );
-      }
+    foreach ($this->entityProperties() as $name => $property) {
+      $targets[$name] = array(
+        'name' => check_plain($property['label']),
+        'description' => isset($property['description']) ? check_plain($property['description']) : '',
+      );
     }
 
     $entity_info = $this->entityInfo();
     $targets[$entity_info['entity keys']['id']]['optional_unique'] = TRUE;
 
-    // Remove the bundle target.
-    if (isset($entity_info['bundle keys']['bundle'])) {
-      unset($targets[$entity_info['bundle keys']['bundle']]);
-    }
-
     // Let other modules expose mapping targets.
     self::loadMappers();
     $type = $this->entityType();
-    drupal_alter('feeds_processor_targets', $targets, $type, $info['bundle']);
+    $bundle = $this->bundle();
+    drupal_alter('feeds_processor_targets', $targets, $type, $bundle);
 
     return $targets;
   }
