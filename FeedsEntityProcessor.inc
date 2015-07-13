@@ -129,7 +129,7 @@ class FeedsEntityProcessor extends FeedsProcessor {
     $op = !empty($entity->is_new) ? 'create' : 'update';
 
     // Check if user can create/update the entity.
-    if (entity_access($op, $this->entityType(), $author)) {
+    if (entity_access($op, $this->entityType(), $entity, $author)) {
       return;
     }
 
