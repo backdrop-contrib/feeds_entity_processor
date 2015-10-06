@@ -8,7 +8,7 @@
 /**
  * Test aggregating a feed as node items.
  */
-class FeedsEntityProcessorTest extends FeedsWebTestCase {
+class FeedsEntityProcessorBasicTest extends FeedsWebTestCase {
 
   public static function getInfo() {
     return array(
