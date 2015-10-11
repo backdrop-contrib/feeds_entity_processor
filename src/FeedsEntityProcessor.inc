@@ -272,10 +272,7 @@ class FeedsEntityProcessor extends FeedsProcessor {
     $targets[$entity_info['entity keys']['id']]['optional_unique'] = TRUE;
 
     // Let other modules expose mapping targets.
-    self::loadMappers();
-    $type = $this->entityType();
-    $bundle = $this->bundle();
-    drupal_alter('feeds_processor_targets', $targets, $type, $bundle);
+    $this->getHookTargets($targets);
 
     return $targets;
   }
