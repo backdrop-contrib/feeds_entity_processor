@@ -29,7 +29,7 @@ class FeedsEntityProcessor extends FeedsProcessor {
    */
   protected function bundleKey() {
     $entity_info = $this->entityInfo();
-    return isset($entity_info['bundle keys']['bundle']) ? $entity_info['bundle keys']['bundle'] : FALSE;
+    return isset($entity_info['entity keys']['bundle']) ? $entity_info['entity keys']['bundle'] : FALSE;
   }
 
   /**
@@ -43,7 +43,12 @@ class FeedsEntityProcessor extends FeedsProcessor {
       return FALSE;
     }
 
-    $property = $this->entityWrapper()->getPropertyInfo($bundle_key);
+    try {
+      $property = $this->entityWrapper()->getPropertyInfo($bundle_key);
+    }
+    catch (EntityMetadataWrapperException $e) {
+      // Ignore any metadata wrapper exceptions.
+    }
     return isset($property['label']) ? check_plain($property['label']) : t('Bundle');
   }
 
