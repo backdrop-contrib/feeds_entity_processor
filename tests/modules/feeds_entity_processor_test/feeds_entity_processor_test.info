@@ -1,0 +1,7 @@
+name = "Feeds entity processor module tests"
+description = "Support module for Feeds entity processor related testing."
+package = Testing
+core = 7.x
+hidden = TRUE
+
+files[] = src/FeedsEntityProcessorTestMetadataController.php
