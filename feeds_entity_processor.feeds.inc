@@ -23,11 +23,12 @@ function feeds_entity_processor_feeds_plugins() {
       continue;
     }
 
+    $plural_label = !empty($entity_info['plural label']) ? $entity_info['plural label'] : $entity_info['label'] . ' entities';
+
     $info['FeedsEntityProcessor' . drupal_ucfirst($type)] = array(
       'name' => $entity_info['label'] . ' entity processor - EXPERIMENTAL',
-      // @todo: Use plural label if there.
-      'description' => 'Create and update ' . drupal_strtolower($entity_info['label']) . 's.',
-      'help' => 'Create and update ' . drupal_strtolower($entity_info['label']) . 's from parsed content.',
+      'description' => 'Create and update ' . drupal_strtolower($plural_label),
+      'help' => 'Create and update ' . drupal_strtolower($plural_label) . ' from parsed content.',
       'plugin_key' => 'FeedsEntityProcessor',
       'handler' => array(
         'parent' => 'FeedsProcessor',
