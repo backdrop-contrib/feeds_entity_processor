@@ -13,7 +13,7 @@ class FeedsEntityProcessorPropertyBoolean extends FeedsEntityProcessorPropertyDe
   /**
    * {@inheritdoc}
    */
-  public function getFormField(&$form, &$form_state, $default) {
+  public function getFormField(array &$form, array &$form_state, $default) {
     $field = parent::getFormField($form, $form_state, $default);
     $field['#type'] = 'checkbox';
 

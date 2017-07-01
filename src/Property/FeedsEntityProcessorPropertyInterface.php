@@ -61,7 +61,7 @@ interface FeedsEntityProcessorPropertyInterface {
    * @return array
    *   A Drupal Form API field.
    */
-  public function getFormField(&$form, &$form_state, $default);
+  public function getFormField(array &$form, array &$form_state, $default);
 
   /**
    * Validates the value for the property.

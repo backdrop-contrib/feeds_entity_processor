@@ -79,7 +79,7 @@ class FeedsEntityProcessorPropertyDefault implements FeedsEntityProcessorPropert
   /**
    * Implements FeedsEntityProcessorPropertyInterface::getFormField().
    */
-  public function getFormField(&$form, &$form_state, $default) {
+  public function getFormField(array &$form, array &$form_state, $default) {
     $property_info = $this->getPropertyInfo();
 
     $field = array(
