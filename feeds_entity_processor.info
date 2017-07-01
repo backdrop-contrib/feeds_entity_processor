@@ -5,8 +5,7 @@ core = 7.x
 dependencies[] = feeds (>=7.x-2.0-beta1)
 dependencies[] = entity
 
-files[] = tests/src/FeedsEntityProcessorBasicTest.test
-files[] = tests/src/FeedsEntityProcessorPropertyTest.test
+test_dependencies[] = date:date_api
 
 ; Entity property classes.
 files[] = src/Property/FeedsEntityProcessorPropertyBoolean.php
@@ -14,3 +13,7 @@ files[] = src/Property/FeedsEntityProcessorPropertyDate.php
 files[] = src/Property/FeedsEntityProcessorPropertyDefault.php
 files[] = src/Property/FeedsEntityProcessorPropertyEntity.php
 files[] = src/Property/FeedsEntityProcessorPropertyInterface.php
+
+; Tests.
+files[] = tests/src/FeedsEntityProcessorBasicTest.test
+files[] = tests/src/FeedsEntityProcessorPropertyTest.test
