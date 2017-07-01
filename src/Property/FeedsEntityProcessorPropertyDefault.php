@@ -56,9 +56,9 @@ class FeedsEntityProcessorPropertyDefault implements FeedsEntityProcessorPropert
   }
 
   /**
-   * Implements FeedsEntityProcessorPropertyInterface::getPropertInfo().
+   * Implements FeedsEntityProcessorPropertyInterface::getPropertyInfo().
    */
-  public function getPropertInfo() {
+  public function getPropertyInfo() {
     return $this->propertyInfo;
   }
 
@@ -80,7 +80,7 @@ class FeedsEntityProcessorPropertyDefault implements FeedsEntityProcessorPropert
    * Implements FeedsEntityProcessorPropertyInterface::getFormField().
    */
   public function getFormField(&$form, &$form_state, $default) {
-    $property_info = $this->getPropertInfo();
+    $property_info = $this->getPropertyInfo();
 
     $field = array(
       '#type' => 'textfield',
@@ -113,7 +113,7 @@ class FeedsEntityProcessorPropertyDefault implements FeedsEntityProcessorPropert
    */
   public function validate(&$value) {
     $errors = array();
-    $property_info = $this->getPropertInfo();
+    $property_info = $this->getPropertyInfo();
 
     if (entity_property_list_extract_type($property_info['type']) && !is_array($value)) {
       $value = array($value);
@@ -134,7 +134,7 @@ class FeedsEntityProcessorPropertyDefault implements FeedsEntityProcessorPropert
    * Implements FeedsEntityProcessorPropertyInterface::getMappingTarget().
    */
   public function getMappingTarget() {
-    $property_info = $this->getPropertInfo();
+    $property_info = $this->getPropertyInfo();
 
     return array(
       'name' => check_plain($property_info['label']),

@@ -30,7 +30,7 @@ interface FeedsEntityProcessorPropertyInterface {
    * @return array
    *   The property info.
    */
-  public function getPropertInfo();
+  public function getPropertyInfo();
 
   /**
    * Returns entity metata wrapper.

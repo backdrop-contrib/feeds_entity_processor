@@ -14,7 +14,7 @@ class FeedsEntityProcessorPropertyEntityType extends FeedsEntityProcessorPropert
    * Implements FeedsEntityProcessorPropertyInterface::validate().
    */
   public function validate(&$value) {
-    $info = $this->getPropertInfo();
+    $info = $this->getPropertyInfo();
     $entity_type = $info['type'];
 
     if ($value) {
@@ -39,7 +39,7 @@ class FeedsEntityProcessorPropertyEntityType extends FeedsEntityProcessorPropert
    * {@inheritdoc}
    */
   public function setValue($value, array $mapping) {
-    $info = $this->getPropertInfo();
+    $info = $this->getPropertyInfo();
 
     if (is_scalar($value)) {
       $wrapper = entity_metadata_wrapper($info['type'], $value);

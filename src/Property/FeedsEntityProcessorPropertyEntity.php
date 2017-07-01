@@ -14,7 +14,7 @@ class FeedsEntityProcessorPropertyEntity extends FeedsEntityProcessorPropertyDef
    * {@inheritdoc}
    */
   public function getFormField(&$form, &$form_state, $default) {
-    $property_info = $this->getPropertInfo();
+    $property_info = $this->getPropertyInfo();
 
     $field = array(
       '#type' => 'fieldset',
