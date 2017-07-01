@@ -9,6 +9,7 @@
  * Default handler for entity properties.
  */
 class FeedsEntityProcessorPropertyDefault implements FeedsEntityProcessorPropertyInterface {
+
   /**
    * The property name.
    *
@@ -147,4 +148,5 @@ class FeedsEntityProcessorPropertyDefault implements FeedsEntityProcessorPropert
   public function setValue($value, array $mapping) {
     $this->entityWrapper()->get($this->getName())->set($value);
   }
+
 }

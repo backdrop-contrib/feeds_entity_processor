@@ -9,6 +9,7 @@
  * Handler for specified entity type property.
  */
 class FeedsEntityProcessorPropertyEntityType extends FeedsEntityProcessorPropertyDefault {
+
   /**
    * Implements FeedsEntityProcessorPropertyInterface::validate().
    */
@@ -46,4 +47,5 @@ class FeedsEntityProcessorPropertyEntityType extends FeedsEntityProcessorPropert
 
     parent::setValue($wrapper, $mapping);
   }
+
 }

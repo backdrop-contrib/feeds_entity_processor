@@ -9,6 +9,7 @@
  * Handler for date property.
  */
 class FeedsEntityProcessorPropertyDate extends FeedsEntityProcessorPropertyDefault {
+
   /**
    * {@inheritdoc}
    */
@@ -21,4 +22,5 @@ class FeedsEntityProcessorPropertyDate extends FeedsEntityProcessorPropertyDefau
 
     return parent::validate($value);
   }
+
 }

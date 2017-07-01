@@ -9,6 +9,7 @@
  * Handler for entity property.
  */
 class FeedsEntityProcessorPropertyEntity extends FeedsEntityProcessorPropertyDefault {
+
   /**
    * {@inheritdoc}
    */
@@ -175,4 +176,5 @@ class FeedsEntityProcessorPropertyEntity extends FeedsEntityProcessorPropertyDef
       parent::setValue($wrapper, $mapping);
     }
   }
+
 }

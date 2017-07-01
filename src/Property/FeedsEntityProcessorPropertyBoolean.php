@@ -9,6 +9,7 @@
  * Handler for boolean property.
  */
 class FeedsEntityProcessorPropertyBoolean extends FeedsEntityProcessorPropertyDefault {
+
   /**
    * {@inheritdoc}
    */
@@ -18,4 +19,5 @@ class FeedsEntityProcessorPropertyBoolean extends FeedsEntityProcessorPropertyDe
 
     return $field;
   }
+
 }
