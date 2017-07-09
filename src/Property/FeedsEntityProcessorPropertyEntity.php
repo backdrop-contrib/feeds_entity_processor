@@ -70,7 +70,7 @@ class FeedsEntityProcessorPropertyEntity extends FeedsEntityProcessorPropertyDef
       if (!$entity) {
         $entity_types = $this->getEntityTypeOptions();
         return array(
-          t('@entity_type with id @entity_id does not exist.', array(
+          t('@entity_type with ID "@entity_id" does not exist.', array(
             '@entity_type' => $entity_types[$value['entity_type']],
             '@entity_id' => $value['entity_id'],
           )),

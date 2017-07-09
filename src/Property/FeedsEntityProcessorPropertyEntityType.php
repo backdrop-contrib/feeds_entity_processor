@@ -23,7 +23,7 @@ class FeedsEntityProcessorPropertyEntityType extends FeedsEntityProcessorPropert
         $entity_info = entity_get_info();
         $entity_type_label = $entity_info[$entity_type]['label'];
         return array(
-          t('@entity_type with id @entity_id does not exist.', array(
+          t('@entity_type with ID "@entity_id" does not exist.', array(
             '@entity_type' => $entity_type_label,
             '@entity_id' => $value,
           )),
@@ -46,6 +46,23 @@ class FeedsEntityProcessorPropertyEntityType extends FeedsEntityProcessorPropert
     }
 
     parent::setValue($wrapper, $mapping);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getDataType() {
+    $type = parent::getDataType();
+    $info = entity_get_info($type);
+
+    if (isset($info['entity keys']['id'])) {
+      $id_key = $info['entity keys']['id'];
+      if (isset($info['base table field types'][$id_key])) {
+        $type .= ' (' . $info['base table field types'][$id_key] . ')';
+      }
+    }
+
+    return $type;
   }
 
 }

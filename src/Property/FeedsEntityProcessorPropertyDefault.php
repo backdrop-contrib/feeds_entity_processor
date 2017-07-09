@@ -90,6 +90,22 @@ class FeedsEntityProcessorPropertyDefault implements FeedsEntityProcessorPropert
       '#required' => !empty($property_info['required']),
     );
 
+    // Add machine name of property.
+    if (!empty($field['#description'])) {
+      $field['#description'] .= '<br />';
+    }
+    $field['#description'] .= t('Machine name: @name', array(
+      '@name' => $this->name,
+    ));
+
+    // Add data type info, if available.
+    $data_type = $this->getDataType();
+    if ($data_type) {
+      $field['#description'] .= '<br />' . t('Data type: @type', array(
+        '@type' => $data_type,
+      ));
+    }
+
     if (!empty($property_info['options list'])) {
       $field['#type'] = 'select';
 
@@ -136,9 +152,22 @@ class FeedsEntityProcessorPropertyDefault implements FeedsEntityProcessorPropert
   public function getMappingTarget() {
     $property_info = $this->getPropertyInfo();
 
+    $description = isset($property_info['description']) ? check_plain($property_info['description']) : '';
+
+    // Add data type info, if available.
+    $data_type = $this->getDataType();
+    if ($data_type) {
+      if (!empty($description)) {
+        $description .= "\n";
+      }
+      $description .= t('Data type: @type', array(
+        '@type' => $data_type,
+      ));
+    }
+
     return array(
       'name' => check_plain($property_info['label']),
-      'description' => isset($property_info['description']) ? check_plain($property_info['description']) : '',
+      'description' => $description,
     );
   }
 
@@ -147,6 +176,19 @@ class FeedsEntityProcessorPropertyDefault implements FeedsEntityProcessorPropert
    */
   public function setValue($value, array $mapping) {
     $this->entityWrapper()->get($this->getName())->set($value);
+  }
+
+  /**
+   * Returns the data type of the current property (if known).
+   *
+   * @return string|null
+   *   The property's data type or NULL if data type is unknown.
+   */
+  protected function getDataType() {
+    $property_info = $this->getPropertyInfo();
+    if (isset($property_info['type'])) {
+      return $property_info['type'];
+    }
   }
 
 }
