@@ -19,4 +19,5 @@ files[] = src/Property/FeedsEntityProcessorPropertyInterface.php
 
 ; Tests.
 files[] = tests/src/FeedsEntityProcessorBasicTest.test
+files[] = tests/src/FeedsEntityProcessorDateTest.test
 files[] = tests/src/FeedsEntityProcessorPropertyTest.test
