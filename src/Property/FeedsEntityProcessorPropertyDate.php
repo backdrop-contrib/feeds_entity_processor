@@ -98,7 +98,7 @@ class FeedsEntityProcessorPropertyDate extends FeedsEntityProcessorPropertyDefau
    */
   public function preprocessCallback(array $target, array &$mapping) {
     if (!module_exists('date_api')) {
-      drupal_set_message(t('Dates can only be imported as timestamps now. Enable the Date API module (part of the <a href="@url">Date</a> project) to be able to import dates in various date formats.', array(
+      backdrop_set_message(t('Dates can only be imported as timestamps now. Enable the Date API module (part of the <a href="@url">Date</a> project) to be able to import dates in various date formats.', array(
         '@url' => 'https://www.drupal.org/project/date',
       )), 'warning', FALSE);
     }
@@ -129,7 +129,7 @@ class FeedsEntityProcessorPropertyDate extends FeedsEntityProcessorPropertyDefau
     $mapping += array('timezone' => 'UTC');
 
     if ($mapping['timezone'] === '__SITE__') {
-      return variable_get('date_default_timezone', 'UTC');
+      return date_default_timezone();
     }
 
     return $mapping['timezone'];
@@ -151,34 +151,29 @@ class FeedsEntityProcessorPropertyDate extends FeedsEntityProcessorPropertyDefau
   }
 
   /**
-   * Converts a date string or object into a DateObject.
+   * Converts a date string or object into a BackdropDateTime.
    *
    * @param DateTime|string|int $value
    *   The date value or object.
    * @param DateTimeZone $default_tz
    *   The default timezone.
    *
-   * @return DateObject
-   *   The converted DateObject.
+   * @return BackdropDateTime
+   *   The converted BackdropDateTime.
    *
    * @throws RuntimeException
-   *   In case the DateObject class does not exist.
+   *   In case the BackdropDateTime class does not exist.
    */
   protected function convertDate($value, DateTimeZone $default_tz = NULL) {
-    if (!class_exists('DateObject')) {
-      if (!module_exist('date_api')) {
-        throw new RuntimeException('Enable the date_api module to handle importing dates correctly.');
-      }
-      else {
-        throw new RuntimeException('Class "DateObject" not found. Clear caches or rebuild the Drupal class registry and try again.');
-      }
+    if (!class_exists('BackdropDateTime')) {
+      throw new RuntimeException('Class "BackdropDateTime" not found. Clear caches or rebuild the Backdrop class registry and try again.');
     }
 
     if (empty($timezone)) {
-      $timezone = variable_get('date_default_timezone', 'UTC');
+      $timezone = date_default_timezone();
     }
 
-    if ($value instanceof DateObject) {
+    if ($value instanceof BackdropDateTime) {
       return $value;
     }
 
@@ -187,7 +182,7 @@ class FeedsEntityProcessorPropertyDate extends FeedsEntityProcessorPropertyDefau
       if (!$value->getTimezone() || !preg_match('/[a-zA-Z]/', $value->getTimezone()->getName())) {
         $value->setTimezone($default_tz);
       }
-      return new DateObject($value->format(DATE_FORMAT_ISO), $value->getTimezone());
+      return new BackdropDateTime($value->format(DATE_FORMAT_ISO), $value->getTimezone());
     }
 
     if (is_string($value) || is_object($value) && method_exists($value, '__toString')) {
@@ -201,12 +196,12 @@ class FeedsEntityProcessorPropertyDate extends FeedsEntityProcessorPropertyDefau
 
     // Support year values.
     if ((string) $value === (string) (int) $value) {
-      if ($value >= variable_get('date_min_year', 100) && $value <= variable_get('date_max_year', 4000)) {
-        return new DateObject('January ' . $value, $default_tz);
+      if ($value >= DATE_MIN_YEAR && $value <= DATE_MAX_YEAR) {
+        return new BackdropDateTime('January ' . $value, $default_tz);
       }
     }
 
-    return new DateObject($value, $default_tz);
+    return new BackdropDateTime($value, $default_tz);
   }
 
 }

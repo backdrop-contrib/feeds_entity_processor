@@ -59,7 +59,7 @@ interface FeedsEntityProcessorPropertyInterface {
    *   The default value for the field.
    *
    * @return array
-   *   A Drupal Form API field.
+   *   A Backdrop Form API field.
    */
   public function getFormField(array &$form, array &$form_state, $default);
 

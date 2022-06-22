@@ -14,6 +14,7 @@ class FeedsEntityProcessorTestMetadataController extends EntityDefaultMetadataCo
    * Overrides EntityDefaultMetadataController::entityPropertyInfo().
    */
   public function entityPropertyInfo() {
+    $config = config('feeds_entity_processor_test.settings');
     $info = parent::entityPropertyInfo();
     $properties = &$info[$this->type]['properties'];
 
@@ -49,7 +50,7 @@ class FeedsEntityProcessorTestMetadataController extends EntityDefaultMetadataCo
       'description' => t('The linked entity.'),
       'getter callback' => 'feeds_entity_processor_test_entity_getter',
       'setter callback' => 'feeds_entity_processor_test_entity_setter',
-      'required' => variable_get('feeds_entity_processor_test_required', TRUE),
+      'required' => $config->get('feeds_entity_processor_test_required'),
     );
 
     // Author.
@@ -60,7 +61,7 @@ class FeedsEntityProcessorTestMetadataController extends EntityDefaultMetadataCo
       'description' => t('The author of the item.'),
       'getter callback' => 'feeds_entity_processor_test_entity_getter',
       'setter callback' => 'feeds_entity_processor_test_entity_setter',
-      'required' => variable_get('feeds_entity_processor_test_required', TRUE),
+      'required' => $config->get('feeds_entity_processor_test_required'),
     );
 
     return $info;

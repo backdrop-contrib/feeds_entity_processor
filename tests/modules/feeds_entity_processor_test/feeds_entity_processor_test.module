@@ -110,3 +110,12 @@ function feeds_entity_processor_test_entity_setter($object, $property_name, $val
       break;
   }
 }
+
+/**
+ * Implements hook_autoload_info().
+ */
+function feeds_entity_processor_test_autoload_info() {
+  return array(
+    'FeedsEntityProcessorTestMetadataController' => 'src/FeedsEntityProcessorTestMetadataController.php',
+  );
+}

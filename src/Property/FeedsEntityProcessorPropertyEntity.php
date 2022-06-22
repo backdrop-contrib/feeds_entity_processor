@@ -19,7 +19,7 @@ class FeedsEntityProcessorPropertyEntity extends FeedsEntityProcessorPropertyDef
     $field = array(
       '#type' => 'fieldset',
       '#title' => check_plain($property_info['label']),
-      '#description' => isset($property_info['description']) ? check_plain($property_info['description']) : '',
+      '#description' => isset($property_info['description'])?check_plain($property_info['description']) : '',
       '#required' => !empty($property_info['required']),
       '#tree' => TRUE,
     );
@@ -49,7 +49,7 @@ class FeedsEntityProcessorPropertyEntity extends FeedsEntityProcessorPropertyDef
    *   A list of entity types keyed by machine name => label.
    */
   public function getEntityTypeOptions() {
-    $entity_type_options = &drupal_static(__METHOD__);
+    $entity_type_options = &backdrop_static(__METHOD__);
 
     if (empty($entity_type_options)) {
       $info = entity_get_info();
@@ -66,7 +66,7 @@ class FeedsEntityProcessorPropertyEntity extends FeedsEntityProcessorPropertyDef
    */
   public function validate(&$value) {
     if (!empty($value['entity_type']) && !empty($value['entity_id'])) {
-      $entity = entity_load_single($value['entity_type'], $value['entity_id']);
+      $entity = entity_load($value['entity_type'], $value['entity_id']);
       if (!$entity) {
         $entity_types = $this->getEntityTypeOptions();
         return array(

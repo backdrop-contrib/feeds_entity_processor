@@ -49,7 +49,7 @@ class FeedsEntityProcessor extends FeedsProcessor {
     catch (EntityMetadataWrapperException $e) {
       // Ignore any metadata wrapper exceptions.
     }
-    return isset($property['label']) ? check_plain($property['label']) : t('Bundle');
+    return isset($property['label'])?check_plain($property['label']) : t('Bundle');
   }
 
   /**
@@ -169,7 +169,7 @@ class FeedsEntityProcessor extends FeedsProcessor {
    * Implements FeedsProcessor::entitySave().
    */
   public function entitysave($entity) {
-    entity_save($this->entityType(), $entity);
+    entity_plus_save($this->entityType(), $entity);
   }
 
   /**

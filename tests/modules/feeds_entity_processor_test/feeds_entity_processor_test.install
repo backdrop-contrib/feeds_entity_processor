@@ -154,3 +154,21 @@ function feeds_entity_processor_test_schema() {
 
   return $schema;
 }
+
+/**
+ * Migrate feeds_entity_processor_test variables to config.
+ */
+function feeds_entity_processor_test_update_1000() {
+  $config = config('feeds_entity_processor_test.settings');
+  $config->set('feeds_entity_processor_test_required', update_variable_get('feeds_entity_processor_test_required', TRUE));
+  $config->save();
+
+  update_variable_del('feeds_entity_processor_test_required');
+}
+
+/**
+ * Implements hook_install().
+ */
+function feeds_entity_processor_test_install() {
+  // Dynamically generated variable data was detected.
+}

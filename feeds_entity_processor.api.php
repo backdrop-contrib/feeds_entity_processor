@@ -18,7 +18,7 @@ function hook_feeds_entity_processor_properties() {
       // Feeds entity processor will look for
       // FeedsEntityProcessorPropertyMyPropertyType.php in the my_module
       // directory.
-      'path' => drupal_get_path('module', 'my_module'),
+      'path' => backdrop_get_path('module', 'my_module'),
     ),
   );
 

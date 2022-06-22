@@ -6,50 +6,10 @@
  */
 
 /**
- * Implements hook_feeds_plugins().
- */
-function feeds_entity_processor_feeds_plugins() {
-  $path = drupal_get_path('module', 'feeds_entity_processor') . '/src';
-
-  $info = array();
-
-  foreach (entity_get_info() as $type => $entity_info) {
-    // Don't support entity type bundles.
-    if (!empty($entity_info['bundle of'])) {
-      continue;
-    }
-
-    if (!entity_type_supports($type, 'create') || !entity_type_supports($type, 'save')) {
-      continue;
-    }
-
-    $plural_label = !empty($entity_info['plural label']) ? $entity_info['plural label'] : $entity_info['label'] . ' entities';
-
-    $info['FeedsEntityProcessor' . drupal_ucfirst($type)] = array(
-      'name' => $entity_info['label'] . ' entity processor - EXPERIMENTAL',
-      'description' => 'Create and update ' . drupal_strtolower($plural_label),
-      'help' => 'Create and update ' . drupal_strtolower($plural_label) . ' from parsed content.',
-      'plugin_key' => 'FeedsEntityProcessor',
-      'handler' => array(
-        'parent' => 'FeedsProcessor',
-        'class' => 'FeedsEntityProcessor',
-        'file' => 'FeedsEntityProcessor.inc',
-        'path' => $path,
-      ),
-      // Add in the entity type used.
-      // @see FeedsEntityProcessor::entityType()
-      'type' => $type,
-    );
-  }
-
-  return $info;
-}
-
-/**
  * Implements hook_feeds_entity_processor_properties().
  */
-function feeds_entity_processor_feeds_entity_processor_properties() {
-  $path = drupal_get_path('module', 'feeds_entity_processor') . '/src/Property';
+function _feeds_entity_processor_properties() {
+  $path = backdrop_get_path('module', 'feeds_entity_processor') . '/src/Property';
 
   $info = array();
 
