@@ -5,6 +5,7 @@
  * Contains FeedsEntityProcessorDateTest.
  */
 
+ require_once BACKDROP_ROOT . '/modules/feeds/tests/feeds.test';
 /**
  * Tests importing entities with properties of various data types.
  */
@@ -52,14 +53,14 @@ class FeedsEntityProcessorDateTest extends FeedsWebTestCase {
     $this->setPlugin('syndication', 'FeedsEntityProcessorFeeds_entity_processor_test');
 
     // Create bundle entity.
-    $this->bundle = drupal_strtolower($this->randomName());
+    $this->bundle = backdrop_strtolower($this->randomName());
     entity_create('feeds_entity_processor_test_type', array(
-      'id' => drupal_strtolower($this->randomName()),
+      'id' => backdrop_strtolower($this->randomName()),
       'name' => $this->bundle,
     ))->save();
 
     // Create a node.
-    $this->node = $this->drupalCreateNode();
+    $this->node = $this->backdropCreateNode();
 
     // Set bundle and set default values for required properties.
     $this->setSettings('syndication', 'FeedsEntityProcessorFeeds_entity_processor_test', array(
@@ -94,11 +95,11 @@ class FeedsEntityProcessorDateTest extends FeedsWebTestCase {
     ));
 
     // Run import.
-    $this->importURL('syndication', $GLOBALS['base_url'] . '/' . drupal_get_path('module', 'feeds_entity_processor') . '/tests/resources/content_date.csv');
+    $this->importURL('syndication', $GLOBALS['base_url'] . '/' . backdrop_get_path('module', 'feeds_entity_processor') . '/tests/resources/content_date.csv');
     $this->assertText('Created 7 test entities');
 
     foreach ($this->getExpectedTimestamps() as $entity_id => $expected_value) {
-      $entity = entity_load_single('feeds_entity_processor_test', $entity_id);
+      $entity = entity_load('feeds_entity_processor_test', $entity_id);
       $this->assertEqual($expected_value, $entity->created);
     }
   }
@@ -117,7 +118,7 @@ class FeedsEntityProcessorDateTest extends FeedsWebTestCase {
     ));
 
     // Run import.
-    $this->importURL('syndication', $GLOBALS['base_url'] . '/' . drupal_get_path('module', 'feeds_entity_processor') . '/tests/resources/content_date.csv');
+    $this->importURL('syndication', $GLOBALS['base_url'] . '/' . backdrop_get_path('module', 'feeds_entity_processor') . '/tests/resources/content_date.csv');
     $this->assertText('Created 7 test entities');
 
     $expected_values = $this->getExpectedTimestamps();
@@ -145,7 +146,7 @@ class FeedsEntityProcessorDateTest extends FeedsWebTestCase {
     }
 
     foreach ($expected_values as $entity_id => $expected_value) {
-      $entity = entity_load_single('feeds_entity_processor_test', $entity_id);
+      $entity = entity_load('feeds_entity_processor_test', $entity_id);
       $this->assertEqual($expected_value, $entity->created);
     }
   }
@@ -158,13 +159,13 @@ class FeedsEntityProcessorDateTest extends FeedsWebTestCase {
     module_disable(array('date_api'));
 
     // Go to the settings page.
-    $this->drupalGet('admin/structure/feeds/syndication/settings/FeedsEntityProcessorFeeds_entity_processor_test');
+    $this->backdropGet('admin/structure/feeds/syndication/settings/FeedsEntityProcessorFeeds_entity_processor_test');
 
     // Assert advise about enabling the Date API module.
     $this->assertText('Enter a timestamp or enable the Date API module');
 
     // Go to the mapping page.
-    $this->drupalGet('admin/structure/feeds/syndication/mapping');
+    $this->backdropGet('admin/structure/feeds/syndication/mapping');
 
     // Since there hasn't been mapped to a date target yet, assert that no
     // warning is yet shown about enabling the Date API module.
@@ -186,11 +187,11 @@ class FeedsEntityProcessorDateTest extends FeedsWebTestCase {
 
     // Assert that the advise about enabling the Date API module is now gone on
     // the settings page.
-    $this->drupalGet('admin/structure/feeds/syndication/settings/FeedsEntityProcessorFeeds_entity_processor_test');
+    $this->backdropGet('admin/structure/feeds/syndication/settings/FeedsEntityProcessorFeeds_entity_processor_test');
     $this->assertNoText('Enter a timestamp or enable the Date API module');
 
     // Assert that the warning on the mapping page is gone as well.
-    $this->drupalGet('admin/structure/feeds/syndication/mapping');
+    $this->backdropGet('admin/structure/feeds/syndication/mapping');
     $this->assertNoText('Enable the Date API module');
   }
 

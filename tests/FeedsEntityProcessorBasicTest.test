@@ -5,27 +5,18 @@
  * Tests for plugins/FeedsEntityProcessor.inc.
  */
 
+require_once backdrop_get_path('module', 'feeds') . '/tests/feeds.test';
+
 /**
  * Tests importing entities using the generic processor.
  */
 class FeedsEntityProcessorBasicTest extends FeedsWebTestCase {
 
   /**
-   * {@inheritdoc}
-   */
-  public static function getInfo() {
-    return array(
-      'name' => 'Basic import capabilities',
-      'description' => 'Tests importing entities using the generic processor.',
-      'group' => 'Feeds entity processor',
-    );
-  }
-
-  /**
    * Set up test.
    */
   public function setUp() {
-    parent::setUp(array('entity_test', 'feeds_entity_processor'));
+    parent::setUp(array('entity_test', 'feeds_entity_processor', 'entity_plus'));
     // Create an importer configuration.
     $this->createImporterConfiguration('Syndication', 'syndication');
     $this->setPlugin('syndication', 'FeedsEntityProcessorEntity_test');
@@ -35,11 +26,11 @@ class FeedsEntityProcessorBasicTest extends FeedsWebTestCase {
    * Test basic entity creation.
    */
   public function test() {
-    $bundle = drupal_strtolower($this->randomName());
+    $bundle = backdrop_strtolower($this->randomName());
 
     // Create bundle entity.
-    entity_create('entity_test_type', array(
-      'id' => drupal_strtolower($this->randomName()),
+    entity_create('entity_test', array(
+      'id' => backdrop_strtolower($this->randomName()),
       'name' => $bundle,
     ))->save();
 
@@ -55,7 +46,7 @@ class FeedsEntityProcessorBasicTest extends FeedsWebTestCase {
     ));
 
     // Run import.
-    $this->importURL('syndication', $GLOBALS['base_url'] . '/' . drupal_get_path('module', 'feeds') . '/tests/feeds/developmentseed.rss2');
+    $this->importURL('syndication', $GLOBALS['base_url'] . '/' . backdrop_get_path('module', 'feeds') . '/tests/feeds/developmentseed.rss2');
 
     // Assert 10 items created.
     $this->assertText('Created 10 test entities');
@@ -63,18 +54,18 @@ class FeedsEntityProcessorBasicTest extends FeedsWebTestCase {
 
     // Enable skip missing test entities and import updated feed file.
     $this->setSettings('syndication', 'FeedsEntityProcessorEntity_test', array('update_non_existent' => 'skip'));
-    $missing_url = $GLOBALS['base_url'] . '/' . drupal_get_path('module', 'feeds') . '/tests/feeds/developmentseed_missing.rss2';
+    $missing_url = $GLOBALS['base_url'] . '/' . backdrop_get_path('module', 'feeds') . '/tests/feeds/developmentseed_missing.rss2';
     $this->importURL('syndication', $missing_url);
     $this->assertText('There are no new test entities');
     $this->assertEqual(10, db_query("SELECT COUNT(*) FROM {entity_test}")->fetchField());
 
     // Now delete all items.
-    $this->drupalPost('import/syndication/delete-items', array(), 'Delete');
+    $this->backdropPost('import/syndication/delete-items', array(), 'Delete');
     $this->assertText('Deleted 10 test entities');
     $this->assertEqual(0, db_query("SELECT COUNT(*) FROM {entity_test}")->fetchField());
 
     // Import again, to reset entity counts.
-    $this->importURL('syndication', $GLOBALS['base_url'] . '/' . drupal_get_path('module', 'feeds') . '/tests/feeds/developmentseed.rss2');
+    $this->importURL('syndication', $GLOBALS['base_url'] . '/' . backdrop_get_path('module', 'feeds') . '/tests/feeds/developmentseed.rss2');
     $this->assertText('Created 10 test entities');
     $this->assertEqual(10, db_query("SELECT COUNT(*) FROM {entity_test}")->fetchField());
 
@@ -85,7 +76,7 @@ class FeedsEntityProcessorBasicTest extends FeedsWebTestCase {
     $this->assertEqual(9, db_query("SELECT COUNT(*) FROM {entity_test}")->fetchField());
 
     // Now delete all items.
-    $this->drupalPost('import/syndication/delete-items', array(), 'Delete');
+    $this->backdropPost('import/syndication/delete-items', array(), 'Delete');
     $this->assertText('Deleted 9 test entities');
     $this->assertEqual(0, db_query("SELECT COUNT(*) FROM {entity_test}")->fetchField());
   }
@@ -97,11 +88,11 @@ class FeedsEntityProcessorBasicTest extends FeedsWebTestCase {
     // Include FeedsProcessor.inc so processor related constants are available.
     module_load_include('inc', 'feeds', 'plugins/FeedsProcessor');
 
-    $bundle = drupal_strtolower($this->randomName());
+    $bundle = backdrop_strtolower($this->randomName());
 
     // Create bundle entity.
-    entity_create('entity_test_type', array(
-      'id' => drupal_strtolower($this->randomName()),
+    entity_create('entity_test', array(
+      'id' => backdrop_strtolower($this->randomName()),
       'name' => $bundle,
     ))->save();
     // Create an entity_test record in the database.
@@ -110,7 +101,7 @@ class FeedsEntityProcessorBasicTest extends FeedsWebTestCase {
       'name' => $bundle,
       'uid' => 0,
     );
-    drupal_write_record('entity_test', $record);
+    backdrop_write_record('entity_test', $record);
 
     // Set importer settings.
     $this->setPlugin('syndication', 'FeedsCSVParser');
@@ -128,7 +119,7 @@ class FeedsEntityProcessorBasicTest extends FeedsWebTestCase {
     ));
 
     // Run import.
-    $this->importURL('syndication', $GLOBALS['base_url'] . '/' . drupal_get_path('module', 'feeds') . '/tests/feeds/content.csv');
+    $this->importURL('syndication', $GLOBALS['base_url'] . '/' . backdrop_get_path('module', 'feeds') . '/tests/feeds/content.csv');
     $this->assertText('Updated 1 test entity');
     $this->assertText('Created 1 test entity');
   }

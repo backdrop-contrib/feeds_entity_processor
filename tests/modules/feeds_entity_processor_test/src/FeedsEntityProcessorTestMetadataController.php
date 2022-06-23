@@ -50,7 +50,7 @@ class FeedsEntityProcessorTestMetadataController extends EntityDefaultMetadataCo
       'description' => t('The linked entity.'),
       'getter callback' => 'feeds_entity_processor_test_entity_getter',
       'setter callback' => 'feeds_entity_processor_test_entity_setter',
-      'required' => $config->get('feeds_entity_processor_test_required'),
+      'required' => state_get('feeds_entity_processor_test_required', TRUE),
     );
 
     // Author.
@@ -61,7 +61,7 @@ class FeedsEntityProcessorTestMetadataController extends EntityDefaultMetadataCo
       'description' => t('The author of the item.'),
       'getter callback' => 'feeds_entity_processor_test_entity_getter',
       'setter callback' => 'feeds_entity_processor_test_entity_setter',
-      'required' => $config->get('feeds_entity_processor_test_required'),
+      'required' => state_get('feeds_entity_processor_test_required', TRUE),
     );
 
     return $info;

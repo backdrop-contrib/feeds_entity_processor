@@ -1,0 +1,18 @@
+[FeedsEntityProcessorBasicTest]
+name = Feeds Entity Processor basic test
+description = Tests importing entities using the generic processor.
+group = Feeds Entity Processor
+file = FeedsEntityProcessorBasicTest.test
+
+[FeedsEntityProcessorPropertyTest]
+name = Feeds Entity Processor property test
+description = Tests importing entities with properties of various data types.
+group = Feeds Entity Processor
+file = FeedsEntityProcessorPropertyTest.test
+
+[FeedsEntityProcessorDateTest]
+name = Feeds Entity Processor date test
+description = Tests importing entities with properties of various data types.
+group = Feeds Entity Processor
+file = FeedsEntityProcessorDateTest.test
+

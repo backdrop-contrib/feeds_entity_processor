@@ -5,6 +5,8 @@
  * Contains FeedsEntityProcessorPropertyTest.
  */
 
+require_once BACKDROP_ROOT . '/modules/feeds/tests/feeds.test';
+
 /**
  * Tests importing entities with properties of various data types.
  */
@@ -47,14 +49,14 @@ class FeedsEntityProcessorPropertyTest extends FeedsWebTestCase {
     $this->setPlugin('syndication', 'FeedsEntityProcessorFeeds_entity_processor_test');
 
     // Create bundle entity.
-    $this->bundle = drupal_strtolower($this->randomName());
+    $this->bundle = backdrop_strtolower($this->randomName());
     entity_create('feeds_entity_processor_test_type', array(
-      'id' => drupal_strtolower($this->randomName()),
+      'id' => backdrop_strtolower($this->randomName()),
       'name' => $this->bundle,
     ))->save();
 
     // Create a node.
-    $this->node = $this->drupalCreateNode();
+    $this->node = $this->backdropCreateNode();
   }
 
   /**
@@ -98,11 +100,11 @@ class FeedsEntityProcessorPropertyTest extends FeedsWebTestCase {
     ));
 
     // Run import.
-    $this->importURL('syndication', $GLOBALS['base_url'] . '/' . drupal_get_path('module', 'feeds_entity_processor') . '/tests/resources/test_content.csv');
+    $this->importURL('syndication', $GLOBALS['base_url'] . '/' . backdrop_get_path('module', 'feeds_entity_processor') . '/tests/resources/test_content.csv');
     $this->assertText('Created 1 test entity');
 
     // Check values of imported entity.
-    $entity = entity_load_single('feeds_entity_processor_test', 1);
+    $entity = entity_load('feeds_entity_processor_test', 1);
     $this->assertEqual('Lorem Ipsum', $entity->title);
     $this->assertEqual($this->bundle, $entity->type);
     $this->assertEqual(1, $entity->status);
@@ -139,11 +141,11 @@ class FeedsEntityProcessorPropertyTest extends FeedsWebTestCase {
     ));
 
     // Run import.
-    $this->importURL('syndication', $GLOBALS['base_url'] . '/' . drupal_get_path('module', 'feeds_entity_processor') . '/tests/resources/test_content.csv');
+    $this->importURL('syndication', $GLOBALS['base_url'] . '/' . backdrop_get_path('module', 'feeds_entity_processor') . '/tests/resources/test_content.csv');
     $this->assertText('Created 1 test entity');
 
     // Check values of imported entity.
-    $entity = entity_load_single('feeds_entity_processor_test', 1);
+    $entity = entity_load('feeds_entity_processor_test', 1);
     $this->assertEqual($title, $entity->title);
     $this->assertEqual($this->bundle, $entity->type);
     $this->assertEqual(1, $entity->status);
@@ -158,10 +160,10 @@ class FeedsEntityProcessorPropertyTest extends FeedsWebTestCase {
    */
   public function testWithoutDefaultValues() {
     // Make all properties of feeds_entity_processor_test entities non-required.
-    variable_set('feeds_entity_processor_test_required', FALSE);
+    state_set('feeds_entity_processor_test_required', FALSE);
     // Make sure that entity info is reset.
-    drupal_flush_all_caches();
-    drupal_static_reset();
+    backdrop_flush_all_caches();
+    backdrop_static_reset();
 
     // Set bundle and set default values for required properties.
     $this->setSettings('syndication', 'FeedsEntityProcessorFeeds_entity_processor_test', array(
@@ -186,11 +188,11 @@ class FeedsEntityProcessorPropertyTest extends FeedsWebTestCase {
     ));
 
     // Run import.
-    $this->importURL('syndication', $GLOBALS['base_url'] . '/' . drupal_get_path('module', 'feeds_entity_processor') . '/tests/resources/test_content.csv');
+    $this->importURL('syndication', $GLOBALS['base_url'] . '/' . backdrop_get_path('module', 'feeds_entity_processor') . '/tests/resources/test_content.csv');
     $this->assertText('Created 1 test entity');
 
     // Check values of imported entity.
-    $entity = entity_load_single('feeds_entity_processor_test', 1);
+    $entity = entity_load('feeds_entity_processor_test', 1);
     $this->assertEqual(2, $entity->uid);
     $this->assertEqual(1, $entity->etid);
     $this->assertEqual('node', $entity->entity_type);
