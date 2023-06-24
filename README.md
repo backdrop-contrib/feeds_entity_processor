@@ -4,8 +4,6 @@
 
 This module provides a generic feeds processor for all entity types that support CRUD operations. It allows site mantainers to create feeds importers to populate both custom and core entities. 
 
-NOTE: This project doesn't yet have a release, as it's being blocked by [issue 108](https://github.com/backdrop-contrib/feeds/issues/108) in Feeds.
-
 ## Dependencies
 
 - [Feeds](https://backdropcms.org/project/feeds)
