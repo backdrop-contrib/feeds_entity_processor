@@ -16,35 +16,16 @@ function feeds_entity_processor_hook_info() {
   return array_fill_keys($hooks, array('group' => 'feeds'));
 }
 
-// /**
-//  * Implements hook_ctools_plugin_api().
-//  */
-// function feeds_entity_processor_ctools_plugin_api($owner, $api) {
-//   if ($owner == 'feeds_entity_processor' && $api == 'properties') {
-//     return array('version' => 1);
-//   }
-// }
-
-/**
-//  * Implements hook_feeds_entity_processor_properties().
-//  */
-// function feeds_entity_processo_feeds_entity_processor_properties() {
-//   return array(
-//     'properties' => array(
-//       'cache' => TRUE,
-//       'use hooks' => TRUE,
-//       'classes' => array('handler'),
-//     ),
-//   );
-// }
-
 /** 
  * Gets all property processors.
  */
 function feeds_entity_processor_get_properties($processor) {
-  $plugins = module_invoke_all('feeds_entity_processor_properties');
+  $plugins = &backdrop_static(__FUNCTION__, array());
+  if (empty($plugins)) {
+    $plugins = module_invoke_all('feeds_entity_processor_properties');
+  }
   if ($processor) {
-    return $plugins[$processor];
+    return isset($plugins[$processor]) ? $plugins[$processor] : $plugins['default'];
   }
   return $plugins;
 }

@@ -139,7 +139,7 @@ class FeedsEntityProcessorPropertyDefault implements FeedsEntityProcessorPropert
       return $errors;
     }
 
-    if (!entity_plus_property_list_extract_type($value, $property_info['type'])) {
+    if (!entity_plus_property_verify_data_type($value, $property_info['type'])) {
       $errors[] = t('Invalid data value given. Be sure it matches the required data type and format.');
     }
 

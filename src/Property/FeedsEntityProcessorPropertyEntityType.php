@@ -18,7 +18,7 @@ class FeedsEntityProcessorPropertyEntityType extends FeedsEntityProcessorPropert
     $entity_type = $info['type'];
 
     if ($value) {
-      $entity = entity_load_single($entity_type, $value);
+      $entity = entity_load($entity_type, $value);
       if (!$entity) {
         $entity_info = entity_get_info();
         $entity_type_label = $entity_info[$entity_type]['label'];

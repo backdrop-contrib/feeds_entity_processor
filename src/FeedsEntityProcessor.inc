@@ -168,7 +168,7 @@ class FeedsEntityProcessor extends FeedsProcessor {
   /**
    * Implements FeedsProcessor::entitySave().
    */
-  public function entitysave($entity) {
+  public function entitySave($entity) {
     entity_plus_save($this->entityType(), $entity);
   }
 

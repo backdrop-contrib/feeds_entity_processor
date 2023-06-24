@@ -1,5 +1,5 @@
 [FeedsEntityProcessorBasicTest]
-name = Feeds Entity Processor basic test
+name = Feeds Entity Processor basic import capabilities
 description = Tests importing entities using the generic processor.
 group = Feeds Entity Processor
 file = FeedsEntityProcessorBasicTest.test
