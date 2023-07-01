@@ -240,7 +240,9 @@ class FeedsEntityProcessor extends FeedsProcessor {
       // Validate the value.
       $plugin = feeds_entity_processor_plugin($name, $property, $this->entityWrapper(), $this);
       $errors = $plugin->validate($values['values'][$name]);
-
+      // Cast as array since sometimes $errors can be null.
+      $errors = (array) $errors;
+      
       if (count($errors) === 1) {
         $error = reset($errors);
         form_set_error("values][$name", $error);
