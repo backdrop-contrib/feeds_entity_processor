@@ -65,6 +65,7 @@ class FeedsEntityProcessorPropertyEntity extends FeedsEntityProcessorPropertyDef
    * {@inheritdoc}
    */
   public function validate(&$value) {
+    $errors = array();
     if (!empty($value['entity_type']) && !empty($value['entity_id'])) {
       $entity = entity_load($value['entity_type'], $value['entity_id']);
       if (!$entity) {
@@ -78,8 +79,9 @@ class FeedsEntityProcessorPropertyEntity extends FeedsEntityProcessorPropertyDef
       }
 
       $wrapper = entity_metadata_wrapper($value['entity_type'], $value['entity_id']);
-      return parent::validate($wrapper);
+      $errors = parent::validate($wrapper);
     }
+    return $errors;
   }
 
   /**

@@ -16,6 +16,7 @@ class FeedsEntityProcessorPropertyEntityType extends FeedsEntityProcessorPropert
   public function validate(&$value) {
     $info = $this->getPropertyInfo();
     $entity_type = $info['type'];
+    $errors = array();
 
     if ($value) {
       $entity = entity_load($entity_type, $value);
@@ -31,8 +32,9 @@ class FeedsEntityProcessorPropertyEntityType extends FeedsEntityProcessorPropert
       }
 
       $wrapper = entity_metadata_wrapper($entity_type, $value);
-      return parent::validate($wrapper);
+      $errors = parent::validate($wrapper);
     }
+    return $errors;
   }
 
   /**
