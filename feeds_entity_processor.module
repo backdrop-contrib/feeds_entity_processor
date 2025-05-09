@@ -30,14 +30,6 @@ function feeds_entity_processor_get_properties($processor) {
   return $plugins;
 }
 
-/** 
- * Implements hook_feeds_entity_processor_properties().
- */
-function feeds_entity_processor_feeds_entity_processor_properties() {
-  module_load_include('inc', 'feeds_entity_processor', 'feeds_entity_processor.feeds');
-  return _feeds_entity_processor_properties();
-}
-
 /**
  * Gets an instance of a class for a given plugin.
  *

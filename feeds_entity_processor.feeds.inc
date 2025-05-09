@@ -51,7 +51,7 @@ function feeds_entity_processor_feeds_plugins() {
  * 
  * @see feeds_entity_processor_feeds_entity_processor_properties().
  */
-function _feeds_entity_processor_properties() {
+function feeds_entity_processor_feeds_entity_processor_properties() {
   $path = backdrop_get_path('module', 'feeds_entity_processor') . '/src/Property';
 
   $info = array();
