@@ -11,32 +11,17 @@
 class FeedsEntityProcessorPropertyDate extends FeedsEntityProcessorPropertyDefault {
 
   /**
-   * Implements FeedsEntityProcessorPropertyInterface::getFormField().
-   *
-   * Adds a note about enabling the Date API module.
-   */
-  public function getFormField(array &$form, array &$form_state, $default) {
-    $field = parent::getFormField($form, $form_state, $default);
-    if (!module_exists('date_api')) {
-      $field['#description'] .= '<br />' . t('Enter a timestamp or enable the Date API module (part of the <a href="@url">Date</a> project) to be able to input the date in various date formats.', array(
-        '@url' => 'https://www.drupal.org/project/date',
-      ));
-    }
-    return $field;
-  }
-
-  /**
    * {@inheritdoc}
    */
   public function validate(&$value) {
-    // Entity API won't accept empty date values.
+    // Don't accept empty date values.
     if (empty($value)) {
       $value = NULL;
       return array();
     }
 
     // Convert the date value.
-    if (module_exists('date_api') && !is_numeric($value)) {
+    if (!is_numeric($value)) {
       $date = $this->convertDate($value);
       // Prevent to save the conversion for the config form.
       $date_value = $date->format('U');
@@ -51,11 +36,8 @@ class FeedsEntityProcessorPropertyDate extends FeedsEntityProcessorPropertyDefau
    */
   public function getMappingTarget() {
     $target = parent::getMappingTarget();
-
-    if (module_exists('date_api')) {
-      $target['form_callbacks'][] = array($this, 'mappingFormCallback');
-      $target['summary_callbacks'][] = array($this, 'mappingSummaryCallback');
-    }
+    $target['form_callbacks'][] = array($this, 'mappingFormCallback');
+    $target['summary_callbacks'][] = array($this, 'mappingSummaryCallback');
 
     $target['preprocess_callbacks'][] = array($this, 'preprocessCallback');
 
@@ -88,20 +70,6 @@ class FeedsEntityProcessorPropertyDate extends FeedsEntityProcessorPropertyDefau
     $options = $this->getTimezoneOptions();
 
     return t('Default timezone: %zone', array('%zone' => $options[$mapping['timezone']]));
-  }
-
-  /**
-   * Preprocess callback for date targets.
-   *
-   * Used only to issue a warning about limited date import functionality when
-   * the date_api module is not enabled.
-   */
-  public function preprocessCallback(array $target, array &$mapping) {
-    if (!module_exists('date_api')) {
-      backdrop_set_message(t('Dates can only be imported as timestamps now. Enable the Date API module (part of the <a href="@url">Date</a> project) to be able to import dates in various date formats.', array(
-        '@url' => 'https://www.drupal.org/project/date',
-      )), 'warning', FALSE);
-    }
   }
 
   /**
@@ -140,7 +108,7 @@ class FeedsEntityProcessorPropertyDate extends FeedsEntityProcessorPropertyDefau
    */
   public function setValue($value, array $mapping) {
     // Convert the date value.
-    if (module_exists('date_api') && !is_numeric($value)) {
+    if (!is_numeric($value)) {
       $default_tz = new DateTimeZone($this->getDefaultTimezone($mapping));
 
       $date = $this->convertDate($value, $default_tz);
